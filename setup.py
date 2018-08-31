@@ -14,7 +14,7 @@ from setuptools import find_packages, setup, Command
 NAME = 'pigskin'
 DESCRIPTION = 'A Python library for NFL Game Pass.'
 LONG_DESCRIPTION = DESCRIPTION
-URL = 'https://github.com/aqw/pigskin'
+URL = 'https://github.com/jgshier/pigskin'
 EMAIL = 'alex@waite.eu'
 AUTHOR = 'Alex Waite and many others'
 REQUIRES_PYTHON = ">2.7,!=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"

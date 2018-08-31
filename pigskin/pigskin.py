@@ -342,31 +342,46 @@ class pigskin(object):
 
         return sorted(games, key=lambda x: x['gameDateTimeUtc'])
 
-    def get_team_games(self, season, team=None):
+    def get_team_games(self, season, rteam):
+        team = None
+        rteams = []
         try:
             url = self.config['modules']['ROUTES_DATA_PROVIDERS']['teams']
             teams = self.make_request(url, 'get')
-            if team is None:
+            if rteam is None:
+                self.logger.error('Team = NONE')    
                 return teams
             else:
                 # look for the team name
+                self.logger.debug('Team = %s' % rteam)  
                 for conference in teams['modules']:
                     if 'content' in teams['modules'][conference]:
                         for teamname in teams['modules'][conference]['content']:
-                            if team == teamname['fullName']:
+                            rteams.append(str(teamname['seoname']))
+                            self.logger.debug(teamname)
+                            if rteam == teamname['fullName']:
                                 team = teamname['seoname']
                                 break
+                            elif rteam == teamname['nick']:
+                                team = teamname['seoname']
+                                break
+                            elif rteam == teamname['seoname']:
+                                team = teamname['seoname']
+                                break
+                            elif rteam == teamname['cityState']:
+                                team = teamname['seoname']
+                                break                        
                             else:
-                                return None
-
-                url = self.config['modules']['ROUTES_DATA_PROVIDERS']['team_detail'].replace(':team', team)
-                games_data = self.make_request(url, 'get')
-                # collect games from all keys in 'modules' for a specific season
-                # At the moment, only the Current Season which is supported;
-                # maybe the season category will return so this code will only
-                # be commented out.
-                # games = [g for x in games_data['modules'].keys() if x == 'videos'+season for g in games_data['modules'][x]['content']]
-                games = [g for x in games_data['modules'].keys() if x == 'gamesCurrentSeason' for g in games_data['modules'][x]['content']]
+                                return teams
+                if team:
+                    url = self.config['modules']['ROUTES_DATA_PROVIDERS']['team_detail'].replace(':team', team)
+                    games_data = self.make_request(url, 'get')
+                    # collect games from all keys in 'modules' for a specific season
+                    # At the moment, only the Current Season which is supported;
+                    # maybe the season category will return so this code will only
+                    # be commented out.
+                    # games = [g for x in games_data['modules'].keys() if x == 'videos'+season for g in games_data['modules'][x]['content']]
+                    games = [g for x in games_data['modules'].keys() if x == 'gamesCurrentSeason' for g in games_data['modules'][x]['content']]
 
         except:
             self.logger.error('Acquiring Team games data failed.')
